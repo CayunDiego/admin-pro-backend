@@ -6,9 +6,9 @@ const { check } = require('express-validator');
 const { validateFields } = require('../middlewares/validate-fields.middlewares');
 const { 
   getUsers, 
-  postUsers, 
-  putUsers,
-  deleteUser } = require('../controllers/user.controller');
+  postUser, 
+  putUser,
+  deleteUser } = require('../controllers/users.controller');
 const { validateJWT } = require('../middlewares/validate-jwt');
 
 const router = Router();
@@ -19,12 +19,13 @@ router.get( '/', validateJWT, getUsers );
 //el check lo usamos para validar si los campos estan llegando
 router.post( '/', 
   [
+    validateJWT,
     check('name', 'El nombre es obligatorio').not().isEmpty(),
     check('password', 'El password es obligatorio').not().isEmpty(),
     check('email', 'El email es obligatorio').isEmail(),
     validateFields,
   ],
-  postUsers );
+  postUser );
 
 router.put( '/:id', 
   [
@@ -34,7 +35,7 @@ router.put( '/:id',
     check('role', 'El role es obligatorio').not().isEmpty(),
     validateFields,
   ],
-  putUsers );
+  putUser );
 
 router.delete( '/:id', validateJWT, deleteUser );
 

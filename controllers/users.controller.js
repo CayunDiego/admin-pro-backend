@@ -6,17 +6,37 @@ const User = require('../models/user.model');
 const { generateJWT } = require('../helpers/jwt');
 
 const getUsers = async (req, res) => {
-  const users = await User.find({}, 'name email role google');
+  const from = Number(req.query.from) || 0;
+  const limit = Number(req.query.limit) || 0;
+
+  // const users = await User
+  //                 .find({}, 'name email role google')
+  //                 .skip( from )
+  //                 .limit( limit )
+
+  // const total = await User.count();
+
+  //Cuando tenemos dos o mas tareas asincronas, se nos va a relentizar
+  //Lo que tenemos que hacer, es ejecutar las dos simultaneamente
+  //con el Promise.all ejecutamos una colección de promesas.
+  const [ users, total ] = await Promise.all([
+    User
+      .find({}, 'name email role google')
+      .skip( from )
+      .limit( limit ),
+    User.countDocuments()
+  ])
 
   res.json({
     ok: true, 
+    total,
     users,
     uid: req.uid
   });
 }
 
 //Crear Usuario
-const postUsers = async (req, res = response) => {
+const postUser = async (req, res = response) => {
   const { password, email } = req.body;
   
   try {
@@ -53,7 +73,7 @@ const postUsers = async (req, res = response) => {
   }
 }
 
-const putUsers = async (req, res = response) => {
+const putUser = async (req, res = response) => {
   //TODO: validar token y comprobar si es el usuario correcto
   
   const uid = req.params.id;
@@ -124,7 +144,7 @@ const deleteUser = async (req, res = response) => {
 
 module.exports = {
   getUsers,
-  postUsers,
-  putUsers,
+  postUser,
+  putUser,
   deleteUser
 }
