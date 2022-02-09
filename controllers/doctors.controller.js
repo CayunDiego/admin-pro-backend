@@ -36,18 +36,69 @@ const posDoctor = async (req, res = response) => {
   
 }
 
-const putDoctor = (req, res = response) => {
-  res.json({
-    ok: true,
-    msj: 'putDoctor'
-  });
+const putDoctor = async (req, res = response) => {
+  const doctorlId = req.params.id;
+  const uid = req.uid;
+
+  try {
+    const doctor = await Doctor.findById( doctorlId );
+
+    if ( !doctor ) {
+      return  res.status(404).json({
+        ok: false,
+        msj: 'Doctor no encontrado por id.'
+      });
+    }
+
+    const changesDoctor = {
+      ...req.body,
+      user: uid
+    }
+    
+    const updatedDoctor = await Doctor.findByIdAndUpdate( doctorlId, changesDoctor, { new: true } );
+
+    res.json({
+      ok: true,
+      doctor: updatedDoctor
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msj: 'Hable con el administrador'
+    });
+  }
+
+
+  
 }
 
-const deleteDoctor = (req, res = response) => {
-  res.json({
-    ok: true,
-    msj: 'deleteDoctor'
-  });
+const deleteDoctor = async (req, res = response) => {
+  const doctorlId = req.params.id;
+
+  try {
+    const doctorDb = await Doctor.findById( doctorlId );
+
+    if ( !doctorDb ) {
+      return  res.status(404).json({
+                ok: false,
+                msj: 'Doctor no encontrado por id.'
+              });
+    }
+
+    await Doctor.findByIdAndDelete( doctorlId );
+
+    res.json({
+      ok: true,
+      msj: 'Doctor Eliminado.'
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: true,
+      msj: 'Hable con el administrador.'
+    });
+  }
 }
 
 module.exports = {
