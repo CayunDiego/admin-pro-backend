@@ -19,7 +19,6 @@ router.get( '/', validateJWT, getUsers );
 //el check lo usamos para validar si los campos estan llegando
 router.post( '/', 
   [
-    validateJWT,
     check('name', 'El nombre es obligatorio').not().isEmpty(),
     check('password', 'El password es obligatorio').not().isEmpty(),
     check('email', 'El email es obligatorio').isEmail(),
