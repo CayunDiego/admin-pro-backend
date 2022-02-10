@@ -16,7 +16,7 @@ const login = async (req, res = response) => {
     if ( !userDB ) {
       return res.status(404).json({
         ok: false,
-        mes: 'Email no válida'
+        msj: 'Email no válida'
       });
     }
 
