@@ -60,7 +60,7 @@ const fileUpload = async (req, res = response) => {
 
     res.json({
       ok: true,
-      mjs: 'File uploaded!',
+      msj: 'File uploaded!',
       fileName
     });
   });

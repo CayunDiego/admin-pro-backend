@@ -21,7 +21,7 @@ const getUsers = async (req, res) => {
   //con el Promise.all ejecutamos una colección de promesas.
   const [ users, total ] = await Promise.all([
     User
-      .find({}, 'name email role google')
+      .find({}, 'name email role google img')
       .skip( from )
       .limit( limit ),
     User.countDocuments()
@@ -98,7 +98,15 @@ const putUser = async (req, res = response) => {
         });
       }
     }
-    fields.email = email;
+    if ( !userDB.google ) {
+      fields.email = email;
+    } else if ( userDB.email !== email ) {
+      return res.status(404).json({
+        ok: false,
+        msj: 'Usuario de google no pueden cambiar su correo'
+      });
+    }
+
     //Si no ponemos new: true, nos traerá el usuario como estaba antes de actualizar
     const updatedUser = await User.findByIdAndUpdate( uid, fields, { new: true } );
 
@@ -139,7 +147,6 @@ const deleteUser = async (req, res = response) => {
       msj: 'Hable con el administrador.'
     });
   }
-  
 }
 
 module.exports = {

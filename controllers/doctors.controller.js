@@ -12,6 +12,26 @@ const getDoctors = async (req, res = response) => {
   });
 }
 
+const getDoctorById = async (req, res = response) => {
+  const doctorId = req.params.id;
+  try {
+    const doctor = await Doctor.findById( doctorId )
+                             .populate('user', 'name img')
+                             .populate('hospital', 'name img')
+    res.json({
+      ok: true,
+      doctor
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msj: 'Hable con el administrador'
+    });
+  }
+  
+}
+
 const posDoctor = async (req, res = response) => {
   const uid = req.uid;
   const doctor = new Doctor({
@@ -68,9 +88,6 @@ const putDoctor = async (req, res = response) => {
       msj: 'Hable con el administrador'
     });
   }
-
-
-  
 }
 
 const deleteDoctor = async (req, res = response) => {
@@ -103,6 +120,7 @@ const deleteDoctor = async (req, res = response) => {
 
 module.exports = {
   getDoctors,
+  getDoctorById,
   posDoctor,
   putDoctor,
   deleteDoctor
